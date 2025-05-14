@@ -1,0 +1,24 @@
+{
+  "name": "vitepress-plugin-preview",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./Preview.vue": "./dist/Preview.vue"
+  },
+  "scripts": {
+    "build": "bun scripts/build.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "esbuild": "^0.25.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "vitepress": "^1.0.0-beta.0"
+  },
+  "private": true
+}

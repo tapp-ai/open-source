@@ -1,4 +1,3 @@
-import { type UserConfig as VitePressUserConfig } from "vitepress";
 import { type PreviewsPluginOptions, PreviewsPlugin } from "./plugin";
 
 declare module "vitepress" {
@@ -7,9 +6,9 @@ declare module "vitepress" {
   }
 }
 
-export const withPreviews = (
-  config: VitePressUserConfig
-): VitePressUserConfig => {
+export const withPreviews = <T extends import("vitepress").UserConfig>(
+  config: T
+): T => {
   const plugins = config.vite?.plugins ?? [];
 
   return {

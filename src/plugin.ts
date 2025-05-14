@@ -1,15 +1,7 @@
-import type { Plugin } from "vitepress";
-
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
-import {
-  build,
-  createServer,
-  type UserConfig as ViteUserConfig,
-  type ViteDevServer,
-  type UserConfig,
-} from "vite";
+import { build, createServer } from "vite";
 
 // https://regex101.com/r/roeve3/1
 const CODE_GROUP_REGEX =
@@ -133,7 +125,7 @@ const transform = async (
 const closeBundle = async (
   root: string,
   outDir: string,
-  config?: ViteUserConfig
+  config?: import("vite").UserConfig
 ) => {
   try {
     const tmpdir = getTmpDir(root);
@@ -174,7 +166,10 @@ const buildStart = async (root: string) => {
   }
 };
 
-const configureServer = async (root: string, config?: ViteUserConfig) => {
+const configureServer = async (
+  root: string,
+  config?: import("vite").UserConfig
+) => {
   const tmpdir = getTmpDir(root);
 
   try {
@@ -198,13 +193,15 @@ const configureServer = async (root: string, config?: ViteUserConfig) => {
 };
 
 export interface PreviewsPluginOptions {
-  vite?: UserConfig;
+  vite?: import("vite").UserConfig;
 }
 
-export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
+export function PreviewsPlugin(
+  options?: PreviewsPluginOptions
+): import("vite").Plugin {
   let outDir: string;
   let root: string;
-  let server: ViteDevServer | undefined;
+  let server: import("vite").ViteDevServer | undefined;
 
   let previews: Record<string, string[]> = {};
 

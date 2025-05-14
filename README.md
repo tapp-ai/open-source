@@ -1,6 +1,10 @@
-# vitepress-plugin-preview
+# vitepress-plugin-previews
 
-Display static previews built as Vite projects alongside code groups.
+No-dependencies [VitePress](https://vitepress.dev/) plugin for displaying static previews of code groups built as Vite projects.
+
+Alternative to [vitepress-plugin-sandpack](https://vitepress-sandbox.js-bridge.com/) but static and hosted alongside VitePress.
+
+Perfect for previews referencing private packages or for component libraries building examples into their documentation like [Radix Themes](https://www.radix-ui.com/themes/docs/overview/getting-started).
 
 ## Installation
 
@@ -118,3 +122,4 @@ export default function App() {
 
 - Snippet imports are not supported
 - Because all previews are built together as a [multi-page app](https://vite.dev/guide/build#multi-page-app), the Vite configuration from `previews.vite` will apply to every preview
+- Security considerations must be made because previews are hosted on the same origin

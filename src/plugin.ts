@@ -3,9 +3,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { build, createServer } from "vite";
 
-// https://regex101.com/r/roeve3/1
+// https://regex101.com/r/roeve3/4
 const CODE_GROUP_REGEX =
-  /(?:^\s*?:::\scode-group\s+?preview\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
+  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
 
 // https://regex101.com/r/DwMkgE/1
 const FILE_REGEX =

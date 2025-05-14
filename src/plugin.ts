@@ -163,14 +163,19 @@ const configureServer = async (root: string, config?: ViteUserConfig) => {
   return server;
 };
 
-export interface PreviewPluginOptions {
+export interface PreviewsPluginOptions {
   vite?: UserConfig;
 }
 
-export default function PreviewPlugin(options?: PreviewPluginOptions): Plugin {
+export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
   let outDir: string;
   let root: string;
   let server: ViteDevServer | undefined;
+
+  // TODO: Prevent plugin from running for the previews themselves
+  const isPreview = () => {
+    return outDir.includes(".temp/.previews");
+  };
 
   return {
     name: "vitepress-plugin-preview",
@@ -182,6 +187,7 @@ export default function PreviewPlugin(options?: PreviewPluginOptions): Plugin {
     },
 
     transform(src, id) {
+      // https://github.com/emersonbottero/vitepress-plugin-mermaid/blob/main/src/mermaid-plugin.ts#L39
       if (id.includes("vitepress/dist/client/app/index.js")) {
         src = "\nimport Preview from '" + dist + "/Preview.vue';\n" + src;
 
@@ -211,18 +217,18 @@ export default function PreviewPlugin(options?: PreviewPluginOptions): Plugin {
     },
 
     async buildStart() {
-      if (outDir.includes(".temp")) return;
+      if (isPreview()) return;
       await buildStart(root);
     },
 
     async closeBundle() {
       await server?.close();
-      if (outDir.includes(".temp")) return;
+      if (isPreview()) return;
       return await closeBundle(root, outDir, options?.vite);
     },
 
     async load(id) {
-      if (outDir.includes(".temp")) return;
+      if (isPreview()) return;
       return await load(id, root);
     },
   };

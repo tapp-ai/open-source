@@ -19,7 +19,7 @@ npm install vitepress-plugin-previews
 yarn add vitepress-plugin-previews
 ```
 
-Then, wrap your VitePress configuration.
+Then, wrap your VitePress configuration. Read more about the [caveats](#caveats) below.
 
 ```ts [.vitepress/config.ts]
 import { defineConfig } from "vitepress";
@@ -75,6 +75,46 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 :::
 ````
 
+## Templates
+
+By default, previews only consist of files defined within code groups. However, you may want to base previews off of a template and only overwrite relevant files.
+
+Templates are directories within `.vitepress/.previews/templates`, and they can be referenced in two places.
+
+### Default template
+
+A default template can be specified in the VitePress configuration.
+
+```ts [.vitepress/config.ts]
+import { defineConfig } from "vitepress";
+import { withPreviews } from "vitepress-plugin-previews";
+
+export default withPreviews(
+  defineConfig({
+    previews: {
+      defaultTemplate: "example-template",
+    },
+  })
+);
+```
+
+### Code group templates
+
+Templates can be specified per code group and will overwrite the default template.
+
+````md
+::: code-group preview(example-template)
+
+```tsx [src/App.tsx]
+export default function App() {
+  return <button>Click me</button>;
+}
+```
+
+:::
+````
+
 ## Caveats
 
 - Snippet imports are not supported
+- Because all previews are built together as a [multi-page app](https://vite.dev/guide/build#multi-page-app), the Vite configuration from `previews.vite` will apply to every preview

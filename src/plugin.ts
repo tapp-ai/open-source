@@ -28,13 +28,24 @@ const getTmpDir = (root: string) => {
   return tmpdir;
 };
 
-const generatePreview = async (codeGroup: string, root: string) => {
-  const id = crypto.randomUUID();
+const generateHash = (id: string, index: number) => {
+  const hash = crypto.createHash("md5");
+  hash.update(`${id}-${index}`);
+  return hash.digest("hex");
+};
+
+const generatePreview = async (
+  id: string,
+  index: number,
+  codeGroup: string,
+  root: string
+) => {
+  const previewId = generateHash(id, index);
 
   const tmpdir = getTmpDir(root);
 
   // Copy the template
-  const preview = path.join(tmpdir, id);
+  const preview = path.join(tmpdir, previewId);
 
   const template = path.join(
     root,
@@ -63,35 +74,61 @@ const generatePreview = async (codeGroup: string, root: string) => {
     await fs.writeFile(filePath, content.trim(), "utf-8");
   }
 
-  return id;
+  return previewId;
 };
 
-const load = async (fileId: string, root: string) => {
-  const ext = path.extname(fileId);
-  if (ext !== ".md") return;
+const transform = async (
+  previews: Record<string, string[]>,
+  id: string,
+  src: string,
+  root: string
+) => {
+  if (!id.includes(".md")) return;
 
-  let original: string;
+  // Remove the existing previews
+  const existingPreviews = previews[id];
 
-  try {
-    original = await fs.readFile(fileId, "utf-8");
-  } catch {
-    return;
+  if (existingPreviews) {
+    for (const previewId of existingPreviews) {
+      const tmpdir = getTmpDir(root);
+
+      try {
+        await fs.rm(path.join(tmpdir, previewId), {
+          recursive: true,
+          force: true,
+        });
+      } catch {
+        // TODO: Error handling
+      }
+    }
   }
 
-  let content = original;
+  // Add the new previews
+  let content = src;
 
   const matches = content.matchAll(CODE_GROUP_REGEX);
 
-  for (const match of matches) {
-    const previewId = await generatePreview(match[0], root);
+  let index = 0;
 
-    content = content.replace(
-      match[0],
-      `\n<Preview id="${previewId}" />\n${match[0]}`
-    );
+  for (const match of matches) {
+    try {
+      const previewId = await generatePreview(id, index, match[0], root);
+
+      previews[id] = previews[id] || [];
+      previews[id].push(previewId);
+
+      content = content.replace(
+        match[0],
+        `\n<Preview id="${previewId}" />\n${match[0]}`
+      );
+
+      index++;
+    } catch {
+      // TODO: Error handling
+    }
   }
 
-  if (content === original) return;
+  if (content === src) return;
 
   return content;
 };
@@ -126,7 +163,7 @@ const closeBundle = async (
 
     await fs.rm(tmpdir, { recursive: true, force: true });
   } catch (error) {
-    console.log(error);
+    // TODO: Error handling
   }
 };
 
@@ -136,7 +173,7 @@ const buildStart = async (root: string) => {
 
     await fs.rm(tmpdir, { recursive: true, force: true });
   } catch {
-    // Ignore error
+    // TODO: Error handling
   }
 };
 
@@ -172,21 +209,18 @@ export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
   let root: string;
   let server: ViteDevServer | undefined;
 
-  // TODO: Prevent plugin from running for the previews themselves
-  const isPreview = () => {
-    return outDir.includes(".temp/.previews");
-  };
+  let previews: Record<string, string[]> = {};
 
   return {
     name: "vitepress-plugin-preview",
-    enforce: "post",
+    enforce: "pre",
 
     async configResolved(config) {
       outDir = config.build.outDir;
       root = config.root;
     },
 
-    transform(src, id) {
+    async transform(src, id) {
       // https://github.com/emersonbottero/vitepress-plugin-mermaid/blob/main/src/mermaid-plugin.ts#L39
       if (id.includes("vitepress/dist/client/app/index.js")) {
         src = "\nimport Preview from '" + dist + "/Preview.vue';\n" + src;
@@ -210,6 +244,8 @@ export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
           map: null,
         };
       }
+
+      return await transform(previews, id, src, root);
     },
 
     async configureServer() {
@@ -217,19 +253,12 @@ export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
     },
 
     async buildStart() {
-      if (isPreview()) return;
       await buildStart(root);
     },
 
     async closeBundle() {
       await server?.close();
-      if (isPreview()) return;
       return await closeBundle(root, outDir, options?.vite);
-    },
-
-    async load(id) {
-      if (isPreview()) return;
-      return await load(id, root);
     },
   };
 }

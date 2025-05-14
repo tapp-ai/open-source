@@ -11,9 +11,6 @@ import {
   type UserConfig,
 } from "vite";
 
-// TODO: Replace with import
-const dist = path.join(import.meta.dirname, "..", "dist");
-
 // https://regex101.com/r/roeve3/1
 const CODE_GROUP_REGEX =
   /(?:^\s*?:::\scode-group\s+?preview\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
@@ -223,7 +220,9 @@ export function PreviewsPlugin(options?: PreviewsPluginOptions): Plugin {
     async transform(src, id) {
       // https://github.com/emersonbottero/vitepress-plugin-mermaid/blob/main/src/mermaid-plugin.ts#L39
       if (id.includes("vitepress/dist/client/app/index.js")) {
-        src = "\nimport Preview from '" + dist + "/Preview.vue';\n" + src;
+        src =
+          "\nimport Preview from 'vitepress-plugin-previews/Preview.vue';\n" +
+          src;
 
         const lines = src.split("\n");
 

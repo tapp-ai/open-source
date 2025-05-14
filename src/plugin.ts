@@ -11,10 +11,19 @@ const CODE_GROUP_REGEX =
 const FILE_REGEX =
   /(?:^\s*```[^\s]+\s\[([^\s\]]+)\]\s*$)\s*(?:(^.+?$))\s*(?:```)/gms;
 
-const getTmpDir = (root: string) => {
-  const tmpdir = path.join(root, ".vitepress", ".temp", ".previews");
+const getPluginDir = (root: string) => {
+  const pluginDir = path.join(root, ".vitepress", ".previews");
+  return pluginDir;
+};
 
+const getTmpDir = (root: string) => {
+  const tmpdir = path.join(getPluginDir(root), "cache");
   return tmpdir;
+};
+
+const getTemplatesDir = (root: string) => {
+  const templatesDir = path.join(getPluginDir(root), "templates");
+  return templatesDir;
 };
 
 const generateHash = (id: string, index: number) => {
@@ -27,27 +36,28 @@ const generatePreview = async (
   id: string,
   index: number,
   codeGroup: string,
-  root: string
+  root: string,
+  template?: string
 ) => {
   const previewId = generateHash(id, index);
 
   const tmpdir = getTmpDir(root);
 
   // Copy the template
-  const preview = path.join(tmpdir, previewId);
+  const previewDir = path.join(tmpdir, previewId);
 
-  const template = path.join(
-    root,
-    ".vitepress",
-    "preview",
-    "templates",
-    "react"
-  );
+  if (template) {
+    const templateDir = path.join(getTemplatesDir(root), template);
 
-  await fs.cp(template, preview, {
-    recursive: true,
-    force: true,
-  });
+    try {
+      await fs.cp(templateDir, previewDir, {
+        recursive: true,
+        force: true,
+      });
+    } catch {
+      // TODO: Error handling
+    }
+  }
 
   // Write the files
   const matches = codeGroup.matchAll(FILE_REGEX);
@@ -58,7 +68,7 @@ const generatePreview = async (
 
     if (!file || !content) continue;
 
-    const filePath = path.join(preview, "src", "Preview", file);
+    const filePath = path.join(previewDir, file);
 
     await fs.writeFile(filePath, content.trim(), "utf-8");
   }
@@ -70,7 +80,8 @@ const transform = async (
   previews: Record<string, string[]>,
   id: string,
   src: string,
-  root: string
+  root: string,
+  defaultTemplate?: string
 ) => {
   if (!id.includes(".md")) return;
 
@@ -101,7 +112,13 @@ const transform = async (
 
   for (const match of matches) {
     try {
-      const previewId = await generatePreview(id, index, match[0], root);
+      const previewId = await generatePreview(
+        id,
+        index,
+        match[1] as string,
+        root,
+        match[0].trim() || defaultTemplate
+      );
 
       previews[id] = previews[id] || [];
       previews[id].push(previewId);
@@ -194,6 +211,7 @@ const configureServer = async (
 
 export interface PreviewsPluginOptions {
   vite?: import("vite").UserConfig;
+  defaultTemplate?: string;
 }
 
 export function PreviewsPlugin(
@@ -241,7 +259,7 @@ export function PreviewsPlugin(
         };
       }
 
-      return await transform(previews, id, src, root);
+      return await transform(previews, id, src, root, options?.defaultTemplate);
     },
 
     async configureServer() {

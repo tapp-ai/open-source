@@ -115,9 +115,9 @@ const transform = async (
       const previewId = await generatePreview(
         id,
         index,
-        match[1] as string,
+        match[2] as string,
         root,
-        match[0].trim() || defaultTemplate
+        match[1]?.trim() || defaultTemplate
       );
 
       previews[id] = previews[id] || [];

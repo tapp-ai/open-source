@@ -8,6 +8,9 @@ Perfect for previews referencing private packages or for component libraries bui
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Basic Usage](#basic-usage)
+  - [No-Code Preview](#no-code-preview)
+  - [React Example](#react-example)
 - [Templates](#templates)
 - [Caveats](#caveats)
 
@@ -97,6 +100,8 @@ interface PreviewsPluginOptions {
 
 ## Usage
 
+### Basic Usage
+
 Add the `preview` flag to any code group.
 
 ````md
@@ -124,6 +129,81 @@ createRoot(document.getElementById("root") as HTMLElement).render(
     <script type="module" src="./main.tsx"></script>
   </body>
 </html>
+```
+
+:::
+````
+
+### No-Code Preview
+
+Add the `no-code` flag to hide the code group below the preview. This is useful when you want to show the result without the implementation details.
+
+````md
+::: code-group preview no-code
+
+```tsx [main.tsx]
+import { createRoot } from "react-dom/client";
+
+import App from "./App";
+
+createRoot(document.getElementById("root") as HTMLElement).render(
+  <button>Click me</button>
+);
+```
+
+```html [index.html]
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>
+```
+
+:::
+````
+
+### React Example
+
+Here's a complete React example showing how to structure your files:
+
+````md
+::: code-group preview
+
+```tsx [src/App.tsx]
+import { useState } from 'react';
+import './App.css';
+
+export default function App() {
+  const [count, setCount] = useState(0);
+  
+  return (
+    <div className="app">
+      <h1>Count: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+```css [src/App.css]
+.app {
+  padding: 2rem;
+  text-align: center;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+}
 ```
 
 :::

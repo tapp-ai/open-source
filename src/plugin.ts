@@ -2,10 +2,11 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { build, createServer } from "vite";
+import { PreviewType } from './types';
 
 // https://regex101.com/r/roeve3/4
 const CODE_GROUP_REGEX =
-  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
+  /(?:^\s*?:::\scode-group\s+?(preview(?:\s+?no-code)?(?:\(([^)]*)\))?)\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
 
 // https://regex101.com/r/DwMkgE/1
 const FILE_REGEX =
@@ -121,19 +122,20 @@ const transform = async (
       const previewId = await generatePreview(
         id,
         index,
-        match[2] as string,
+        match[3] as string,
         root,
-        match[1]?.trim() || options?.defaultTemplate
+        match[2]?.trim() || options?.defaultTemplate
       );
 
       previews[id] = previews[id] || [];
       previews[id].push(previewId);
 
       const src = getSrc(previewId, options, server);
+      const type = match[1]?.includes('no-code') ? PreviewType.NoCode : PreviewType.Default;
 
       content = content.replace(
         match[0],
-        `\n<Preview src="${encodeURIComponent(src)}" />\n${match[0]}`
+        `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n${match[0]}`
       );
 
       index++;

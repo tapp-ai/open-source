@@ -3,11 +3,12 @@ import { computed } from "vue";
 
 const props = defineProps<{
   id: string;
+  port?: number;
 }>();
 
 const src = computed(() =>
-  import.meta.env.DEV
-    ? `http://localhost:3002/${props.id}/index.html`
+  typeof props.port !== "undefined"
+    ? `http://localhost:${props.port}/${props.id}/index.html`
     : `/.previews/${props.id}/index.html`
 );
 </script>

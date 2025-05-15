@@ -81,7 +81,7 @@ const transform = async (
   id: string,
   src: string,
   root: string,
-  defaultTemplate?: string
+  { port, options }: { port?: number; options?: PreviewsPluginOptions }
 ) => {
   if (!id.includes(".md")) return;
 
@@ -117,22 +117,27 @@ const transform = async (
         index,
         match[2] as string,
         root,
-        match[1]?.trim() || defaultTemplate
+        match[1]?.trim() || options?.defaultTemplate
       );
 
       previews[id] = previews[id] || [];
       previews[id].push(previewId);
 
-      content = content.replace(
-        match[0],
-        `\n<Preview id="${previewId}" />\n${match[0]}`
-      );
+      // Construct the preview component
+      let component = `<Preview id="${previewId}"`;
+      if (port) component += ` port="${port}"`;
+      component += " />";
+
+      // Inject the preview component
+      content = content.replace(match[0], `\n${component}\n${match[0]}`);
 
       index++;
     } catch {
       // TODO: Error handling
     }
   }
+
+  // TODO: Remove any previews that no longer exist
 
   if (content === src) return;
 
@@ -198,13 +203,7 @@ const configureServer = async (
   const server = await createServer({
     ...config,
     root: tmpdir,
-    server: {
-      ...config?.server,
-      port: 3002,
-    },
   });
-
-  await server.listen();
 
   return server;
 };
@@ -220,6 +219,7 @@ export function PreviewsPlugin(
   let outDir: string;
   let root: string;
   let server: import("vite").ViteDevServer | undefined;
+  let port: number | undefined;
 
   let previews: Record<string, string[]> = {};
 
@@ -259,11 +259,15 @@ export function PreviewsPlugin(
         };
       }
 
-      return await transform(previews, id, src, root, options?.defaultTemplate);
+      return await transform(previews, id, src, root, { options, port });
     },
 
     async configureServer() {
       server = await configureServer(root, options?.vite);
+
+      server.httpServer?.on("listening", () => {
+        port = server?.config.server.port;
+      });
     },
 
     async buildStart() {

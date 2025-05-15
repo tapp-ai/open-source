@@ -121,6 +121,3 @@ export default function App() {
 ## Caveats
 
 - Snippet imports are not supported
-- Because all previews are built together as a [multi-page app](https://vite.dev/guide/build#multi-page-app), the Vite configuration from `previews.vite` will apply to every preview
-- Security considerations must be made because previews are hosted on the same origin
-- Because of how VitePress serves files during `vitepress preview`, previews will result in a 404, but this will not be the case in production

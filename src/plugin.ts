@@ -134,7 +134,9 @@ const transform = async (
 
       content = content.replace(
         match[0],
-        `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n${match[0]}`
+        match[0].includes('no-code')
+          ? `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n`
+          : `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n${match[0]}`
       );
 
       index++;

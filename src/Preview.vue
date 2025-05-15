@@ -10,7 +10,7 @@ const previewType = props.type || 'preview';
 </script>
 
 <template>
-  <div class="code-group-preview" :data-preview-type="previewType">
+  <div class="code-group-preview" :data-type="previewType">
     <iframe
       :src="decodeURIComponent(props.src)"
       class="code-group-preview-frame"
@@ -33,14 +33,10 @@ const previewType = props.type || 'preview';
     border: none;
   }
 
-  &[data-preview-type="preview-no-code"] {
+  &[data-type="preview-no-code"] {
     border-radius: 8px;
     border: 1px solid var(--vp-code-tab-divider);
     margin-bottom: 16px;
-
-    & + .vp-code-group {
-      display: none !important;
-    }
   }
 }
 
@@ -54,7 +50,7 @@ const previewType = props.type || 'preview';
     margin-right: 0;
     margin-left: 0;
 
-    &[data-preview-type="preview-no-code"] {
+    &[data-type="preview-no-code"] {
       border-radius: 8px;
     }
   }

@@ -6,6 +6,11 @@ Alternative to [vitepress-plugin-sandpack](https://vitepress-sandbox.js-bridge.c
 
 Perfect for previews referencing private packages or for component libraries building examples into their documentation like [Radix Themes](https://www.radix-ui.com/themes/docs/overview/getting-started).
 
+- [Installation](#installation)
+- [Usage](#usage)
+- [Templates](#templates)
+- [Caveats](#caveats)
+
 ![Example](./preview.png)
 
 ## Installation

@@ -81,7 +81,10 @@ const transform = async (
   id: string,
   src: string,
   root: string,
-  { port, options }: { port?: number; options?: PreviewsPluginOptions }
+  {
+    server,
+    options,
+  }: { server?: import("vite").ViteDevServer; options?: PreviewsPluginOptions }
 ) => {
   if (!id.includes(".md")) return;
 
@@ -125,7 +128,7 @@ const transform = async (
 
       // Construct the preview component
       let component = `<Preview id="${previewId}"`;
-      if (port) component += ` port="${port}"`;
+      if (server) component += ` port="${server.config.server.port}"`;
       component += " />";
 
       // Inject the preview component
@@ -205,6 +208,8 @@ const configureServer = async (
     root: tmpdir,
   });
 
+  await server.listen();
+
   return server;
 };
 
@@ -259,20 +264,11 @@ export function PreviewsPlugin(
         };
       }
 
-      return await transform(previews, id, src, root, { options, port });
+      return await transform(previews, id, src, root, { options, server });
     },
 
     async configureServer() {
       server = await configureServer(root, options?.vite);
-
-      // https://github.com/vitejs/vite/issues/5543
-      server.httpServer?.on("listening", () => {
-        const address = server?.httpServer?.address();
-
-        if (!address || typeof address !== "object") return;
-
-        port = address.port;
-      });
     },
 
     async buildStart() {

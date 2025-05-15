@@ -81,14 +81,14 @@ interface PreviewsPluginOptions {
     /**
      * The base path of the previews in production.
      *
-     * Defaults to `/_previews/` only when the origin has been set, otherwise `/`.
+     * Defaults to `/` when the origin has been set, otherwise `/_previews/`.
      */
     base?: string;
 
     /**
      * Relative to the VitePress output directory, the output directory for the previews in production.
      *
-     * Defaults to `/_previews/`.
+     * Defaults to `_previews`.
      */
     outDir?: string;
   };

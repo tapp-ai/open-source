@@ -84,7 +84,10 @@ const transform = async (
   {
     server,
     options,
-  }: { server?: import("vite").ViteDevServer; options?: PreviewsPluginOptions }
+  }: {
+    server?: import("vite").ViteDevServer;
+    options: ResolvedPreviewsPluginOptions;
+  }
 ) => {
   if (!id.includes(".md")) return;
 
@@ -126,13 +129,12 @@ const transform = async (
       previews[id] = previews[id] || [];
       previews[id].push(previewId);
 
-      // Construct the preview component
-      let component = `<Preview id="${previewId}"`;
-      if (server) component += ` port="${server.config.server.port}"`;
-      component += " />";
+      const src = getSrc(previewId, options, server);
 
-      // Inject the preview component
-      content = content.replace(match[0], `\n${component}\n${match[0]}`);
+      content = content.replace(
+        match[0],
+        `\n<Preview src="${encodeURIComponent(src)}" />\n${match[0]}`
+      );
 
       index++;
     } catch {
@@ -147,10 +149,32 @@ const transform = async (
   return content;
 };
 
+const getSrc = (
+  id: string,
+  options: ResolvedPreviewsPluginOptions,
+  server?: import("vite").ViteDevServer
+) => {
+  // Development - http://localhost:5173/:id/index.html
+  if (server) {
+    let src = server.config.server.https ? "https" : "http";
+    src += "://localhost:" + server.config.server.port + "/";
+    src += id + "/index.html";
+
+    return src;
+  }
+
+  // Production - /_previews/:id/index.html
+  let src = options.build.origin;
+  src += options.build.base;
+  src += id + "/index.html";
+
+  return src;
+};
+
 const closeBundle = async (
   root: string,
   outDir: string,
-  config?: import("vite").UserConfig
+  options: ResolvedPreviewsPluginOptions
 ) => {
   try {
     const tmpdir = getTmpDir(root);
@@ -158,20 +182,22 @@ const closeBundle = async (
     const entries = await fs.readdir(tmpdir);
 
     await build({
-      ...config,
       root: tmpdir,
-      base: "/.previews/",
+      base: options.build.base,
+      ...options.vite,
       build: {
-        ...config?.build,
         emptyOutDir: true,
-        outDir: path.join(outDir, ".previews"),
+        outDir: path.isAbsolute(options.build.outDir)
+          ? options.build.outDir
+          : path.join(outDir, options.build.outDir),
         rollupOptions: {
-          ...config?.build?.rollupOptions,
+          ...options?.vite?.build?.rollupOptions,
           input: entries.reduce((acc, id) => {
             acc[id] = path.join(tmpdir, id, "index.html");
             return acc;
           }, {} as Record<string, string>),
         },
+        ...options.vite?.build,
       },
     });
 
@@ -193,7 +219,7 @@ const buildStart = async (root: string) => {
 
 const configureServer = async (
   root: string,
-  config?: import("vite").UserConfig
+  options: ResolvedPreviewsPluginOptions
 ) => {
   const tmpdir = getTmpDir(root);
 
@@ -204,7 +230,7 @@ const configureServer = async (
   }
 
   const server = await createServer({
-    ...config,
+    ...options.vite,
     root: tmpdir,
   });
 
@@ -214,17 +240,75 @@ const configureServer = async (
 };
 
 export interface PreviewsPluginOptions {
+  /**
+   * The Vite configuration to use for all previews.
+   *
+   * `build.emptyOutDir` will be set to `true` by default.
+   *
+   * `build.outDir` will be set based on `build.base`.
+   */
   vite?: import("vite").UserConfig;
+
+  /**
+   * The default template to use for previews.
+   *
+   * This will be overridden by the template specified in the code group.
+   */
   defaultTemplate?: string;
+
+  build?: {
+    /**
+     * The origin of the previews in production.
+     */
+    origin?: string;
+
+    /**
+     * The base path of the previews in production.
+     *
+     * Defaults to `/_previews/` only when the origin has been set, otherwise `/`.
+     */
+    base?: string;
+
+    /**
+     * Relative to the VitePress output directory, the output directory for the previews in production.
+     *
+     * Defaults to `/_previews/`.
+     */
+    outDir?: string;
+  };
 }
+
+export interface ResolvedPreviewsPluginOptions extends PreviewsPluginOptions {
+  build: {
+    origin: string;
+    base: string;
+    outDir: string;
+  };
+}
+
+const resolveOptions = (
+  options?: PreviewsPluginOptions
+): ResolvedPreviewsPluginOptions => {
+  return {
+    ...options,
+    build: {
+      ...options?.build,
+      outDir: options?.build?.outDir ?? "_previews",
+      base:
+        options?.build?.base ?? (options?.build?.origin ? "/" : "/_previews/"),
+      origin: options?.build?.origin ?? "",
+    },
+  };
+};
 
 export function PreviewsPlugin(
   options?: PreviewsPluginOptions
 ): import("vite").Plugin {
+  const resolvedOptions = resolveOptions(options);
+
   let outDir: string;
   let root: string;
   let server: import("vite").ViteDevServer | undefined;
-  let port: number | undefined;
 
   let previews: Record<string, string[]> = {};
 
@@ -264,11 +348,14 @@ export function PreviewsPlugin(
         };
       }
 
-      return await transform(previews, id, src, root, { options, server });
+      return await transform(previews, id, src, root, {
+        options: resolvedOptions,
+        server,
+      });
     },
 
     async configureServer() {
-      server = await configureServer(root, options?.vite);
+      server = await configureServer(root, resolvedOptions);
     },
 
     async buildStart() {
@@ -277,7 +364,7 @@ export function PreviewsPlugin(
 
     async closeBundle() {
       await server?.close();
-      return await closeBundle(root, outDir, options?.vite);
+      return await closeBundle(root, outDir, resolvedOptions);
     },
   };
 }

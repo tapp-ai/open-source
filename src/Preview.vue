@@ -1,21 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-
 const props = defineProps<{
-  id: string;
-  port?: number;
+  src: string;
 }>();
-
-const src = computed(() =>
-  typeof props.port !== "undefined"
-    ? `http://localhost:${props.port}/${props.id}/index.html`
-    : `/.previews/${props.id}/index.html`
-);
 </script>
 
 <template>
   <div class="code-group-preview">
-    <iframe :src="src" class="code-group-preview-frame" />
+    <iframe
+      :src="decodeURIComponent(props.src)"
+      class="code-group-preview-frame"
+    />
   </div>
 </template>
 

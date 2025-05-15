@@ -138,35 +138,36 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 
 Add the `no-code` flag to hide the code group below the preview. This is useful when you want to show the result without the implementation details.
 
+The `no-code` flag can be used with or without templates:
+
 ````md
 ::: code-group preview no-code
 
-```tsx [main.tsx]
-import { createRoot } from "react-dom/client";
-
-import App from "./App";
-
-createRoot(document.getElementById("root") as HTMLElement).render(
-  <button>Click me</button>
-);
-```
-
-```html [index.html]
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./main.tsx"></script>
-  </body>
-</html>
+```tsx [App.tsx]
+export default function App() {
+  return <button>Click me</button>;
+}
 ```
 
 :::
 ````
+
+With a template, the `no-code` flag must come after the template name:
+
+````md
+::: code-group preview(my-template) no-code
+
+```tsx [src/App.tsx]
+export default function App() {
+  return <button>Click me</button>;
+}
+```
+
+:::
+````
+
+> [!NOTE]
+> When using both a template and the no-code flag, the syntax must be `preview(templateName) no-code`. The alternative ordering `preview no-code(templateName)` is not supported.
 
 ### React Example
 
@@ -237,7 +238,7 @@ export default withPreviews(
 Templates can be specified per code group and will overwrite the default template.
 
 ````md
-::: code-group preview(example-template)
+::: code-group preview(example-template) no-code
 
 ```tsx [src/App.tsx]
 export default function App() {

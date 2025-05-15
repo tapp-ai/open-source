@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { PreviewType } from './types';
+type PreviewType = 'preview' | 'preview-no-code';
 
 const props = defineProps<{
   src: string;
   type?: PreviewType;
 }>();
 
-const previewType = props.type || PreviewType.Default;
+const previewType = props.type || 'preview';
 </script>
 
 <template>

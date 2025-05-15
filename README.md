@@ -52,6 +52,49 @@ export default withPreviews(
 );
 ```
 
+### Options
+
+```ts
+interface PreviewsPluginOptions {
+  /**
+   * The Vite configuration to use for all previews.
+   *
+   * `build.emptyOutDir` will be set to `true` by default.
+   *
+   * `build.outDir` will be set based on `build.base`.
+   */
+  vite?: import("vite").UserConfig;
+
+  /**
+   * The default template to use for previews.
+   *
+   * This will be overridden by the template specified in the code group.
+   */
+  defaultTemplate?: string;
+
+  build?: {
+    /**
+     * The origin of the previews in production.
+     */
+    origin?: string;
+
+    /**
+     * The base path of the previews in production.
+     *
+     * Defaults to `/_previews/` only when the origin has been set, otherwise `/`.
+     */
+    base?: string;
+
+    /**
+     * Relative to the VitePress output directory, the output directory for the previews in production.
+     *
+     * Defaults to `/_previews/`.
+     */
+    outDir?: string;
+  };
+}
+```
+
 ## Usage
 
 Add the `preview` flag to any code group.

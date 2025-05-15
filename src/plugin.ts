@@ -265,8 +265,13 @@ export function PreviewsPlugin(
     async configureServer() {
       server = await configureServer(root, options?.vite);
 
+      // https://github.com/vitejs/vite/issues/5543
       server.httpServer?.on("listening", () => {
-        port = server?.config.server.port;
+        const address = server?.httpServer?.address();
+
+        if (!address || typeof address !== "object") return;
+
+        port = address.port;
       });
     },
 

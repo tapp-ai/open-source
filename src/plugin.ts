@@ -3,9 +3,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { build, createServer } from "vite";
 
-// https://regex101.com/r/roeve3/5
+// https://regex101.com/r/roeve3/6
 const CODE_GROUP_REGEX =
-  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?(?:\s+?no-code)?\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
+  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?(?:\s+?(no-code))?\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
 
 // https://regex101.com/r/DwMkgE/1
 const FILE_REGEX =
@@ -76,6 +76,11 @@ const generatePreview = async (
   return previewId;
 };
 
+enum PreviewType {
+  Default = 'preview',
+  NoCode = 'preview-no-code'
+}
+
 const transform = async (
   previews: Record<string, string[]>,
   id: string,
@@ -130,14 +135,12 @@ const transform = async (
       previews[id].push(previewId);
 
       const src = getSrc(previewId, options, server);
-      const type = match[0].includes('no-code') ? 'preview-no-code' : 'preview';
+      const type = match[2] ? PreviewType.NoCode : PreviewType.Default;
 
-      content = content.replace(
-        match[0],
-        match[0].includes('no-code')
-          ? `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n`
-          : `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n${match[0]}`
-      );
+      let replacement = `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n`;
+      if (type !== PreviewType.NoCode) replacement += match[0];
+
+      content = content.replace(match[0], replacement);
 
       index++;
     } catch {

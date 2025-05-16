@@ -3,9 +3,9 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { build, createServer } from "vite";
 
-// https://regex101.com/r/roeve3/6
+// https://regex101.com/r/roeve3/7
 const CODE_GROUP_REGEX =
-  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?(?:\s+?(no-code))?\s*?)((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
+  /(?:^\s*?:::\scode-group\s+?preview(?:\(([^)]*)\))?)(?:\s+([a-z-]+(?:\s+[a-z-]+)*(?:\s+[a-z-]+="[^"]*")*))?\s*?((?:^\s*```[^\s]+\s\[[^\]]+\]\s*?$.*?^\s*?```\s*?)+)(?:^\s*?:::\s*?$)/gms;
 
 // https://regex101.com/r/DwMkgE/1
 const FILE_REGEX =
@@ -126,7 +126,7 @@ const transform = async (
       const previewId = await generatePreview(
         id,
         index,
-        match[2] as string,
+        match[3] as string,
         root,
         match[1]?.trim() || options?.defaultTemplate
       );
@@ -135,7 +135,8 @@ const transform = async (
       previews[id].push(previewId);
 
       const src = getSrc(previewId, options, server);
-      const type = match[2] ? PreviewType.NoCode : PreviewType.Default;
+      const modifiers = match[2] ? match[2].trim().split(/\s+/) : [];
+      const type = modifiers.includes('no-code') ? PreviewType.NoCode : PreviewType.Default;
 
       let replacement = `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n`;
       if (type !== PreviewType.NoCode) replacement += match[0];

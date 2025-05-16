@@ -155,7 +155,7 @@ export default function App() {
 With a template, the `no-code` flag must come after the template name:
 
 ````md
-::: code-group preview(my-template) no-code
+::: code-group preview template=my-template no-code
 
 ```tsx [src/App.tsx]
 export default function App() {
@@ -167,14 +167,14 @@ export default function App() {
 ````
 
 > [!NOTE]
-> When using both a template and the no-code flag, the syntax must be `preview(templateName) no-code`. The alternative ordering `preview no-code(templateName)` is not supported.
+> When specifying a template (e.g., `template=my-template`) along with other flags like `no-code`, the order of attributes does not strictly matter, but the recommended syntax is `preview template=templateName no-code`.
 
 ### React Example
 
 Here's a complete React example showing how to structure your files:
 
 ````md
-::: code-group preview
+::: code-group preview template=example-template no-code
 
 ```tsx [src/App.tsx]
 import { useState } from 'react';
@@ -238,7 +238,7 @@ export default withPreviews(
 Templates can be specified per code group and will overwrite the default template.
 
 ````md
-::: code-group preview(example-template) no-code
+::: code-group preview template=example-template no-code
 
 ```tsx [src/App.tsx]
 export default function App() {

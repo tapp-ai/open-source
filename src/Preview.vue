@@ -1,16 +1,14 @@
 <script setup lang="ts">
-type PreviewType = 'preview' | 'preview-no-code';
-
 const props = defineProps<{
   src: string;
-  type?: PreviewType;
+  replace?: true;
 }>();
 
-const previewType = props.type || 'preview';
+const previewType = props.type || "preview";
 </script>
 
 <template>
-  <div class="code-group-preview" :data-type="previewType">
+  <div class="code-group-preview" :data-replace="props.replace">
     <iframe
       :src="decodeURIComponent(props.src)"
       class="code-group-preview-frame"
@@ -23,7 +21,6 @@ const previewType = props.type || 'preview';
   height: 384px;
   margin-top: 16px;
   overflow: hidden;
-  border-bottom: 1px solid var(--vp-code-tab-divider);
   margin-left: -24px;
   margin-right: -24px;
 
@@ -33,9 +30,11 @@ const previewType = props.type || 'preview';
     border: none;
   }
 
-  &[data-type="preview-no-code"] {
-    border-radius: 8px;
-    border: 1px solid var(--vp-code-tab-divider);
+  &:not([data-replace="true"]) {
+    border-bottom: 1px solid var(--vp-code-tab-divider);
+  }
+
+  &[data-replace="true"] {
     margin-bottom: 16px;
   }
 }
@@ -50,7 +49,8 @@ const previewType = props.type || 'preview';
     margin-right: 0;
     margin-left: 0;
 
-    &[data-type="preview-no-code"] {
+    &[data-replace="true"] {
+      border: 1px solid var(--vp-code-tab-divider);
       border-radius: 8px;
     }
   }

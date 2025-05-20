@@ -11,6 +11,9 @@ const CODE_GROUP_REGEX =
 const FILE_REGEX =
   /(?:^\s*```[^\s]+[^\S\r\n]\[([^\s\]]+)\]\s*$)\s*(?:(^.+?$))\s*(?:```)/gms;
 
+// https://regex101.com/r/jtvxto/1
+const ATTRIBUTE_REGEX = /[^\S\r\n]+([a-zA-Z0-9._-]+)(?:=([a-zA-Z0-9._-]+))?/g;
+
 const getPluginDir = (root: string) => {
   const pluginDir = path.join(root, ".vitepress", ".previews");
   return pluginDir;
@@ -76,39 +79,21 @@ const generatePreview = async (
   return previewId;
 };
 
-const parseAttributes = (attrString: string | undefined): Record<string, string | true> => {
-  const attrs: Record<string, string | true> = {};
-  if (!attrString) {
-    return attrs;
+const parseAttributes = (attributes?: string) => {
+  const parsedAttributes: Record<string, string | true | undefined> = {};
+  if (!attributes) return parsedAttributes;
+
+  const matches = attributes.matchAll(ATTRIBUTE_REGEX);
+
+  for (const match of matches) {
+    const [_, attribute, value] = match;
+    if (!attribute) continue;
+
+    parsedAttributes[attribute] = typeof value === "undefined" ? true : value;
   }
 
-  // https://regex101.com/r/jtvxto/1
-  // Regex for one attribute: name(=value)?
-  // Each attribute is preceded by one or more horizontal spaces.
-  // Attribute name: [a-zA-Z0-9._-]+
-  // Optional value part: =([a-zA-Z0-9._-]+)
-  const attrRegex = /[^\S\r\n]+([a-zA-Z0-9._-]+)(?:=([a-zA-Z0-9._-]+))?/g;
-
-  let match;
-  while ((match = attrRegex.exec(attrString)) !== null) {
-    const name = match[1];
-    if (name) {
-      const value = match[2];
-      if (value !== undefined) {
-        attrs[name] = value;
-      } else {
-        // Attribute is a flag, like 'no-code' or 'hidden'
-        attrs[name] = true;
-      }
-    }
-  }
-  return attrs;
+  return parsedAttributes;
 };
-
-enum PreviewType {
-  Default = 'preview',
-  NoCode = 'preview-no-code'
-}
 
 const transform = async (
   previews: Record<string, string[]>,
@@ -152,33 +137,48 @@ const transform = async (
 
   for (const match of matches) {
     try {
-      const attributesString = match[1]; // Group 1 is the attributes string
-      const codeGroup = match[2] as string; // Group 2 is the code blocks
+      const [root, attributes, body] = match;
 
-      const parsedAttrs = parseAttributes(attributesString);
+      // Code groups must have a body
+      if (!body) continue;
 
-      const template = parsedAttrs.template && typeof parsedAttrs.template === 'string'
-        ? parsedAttrs.template
-        : options?.defaultTemplate;
+      const parsedAttributes = parseAttributes(attributes);
+
+      // Fall back to the default template
+      const template =
+        parsedAttributes.template &&
+        typeof parsedAttributes.template === "string"
+          ? parsedAttributes.template
+          : options?.defaultTemplate;
+
+      // Remove the code group during replacement
+      const replace = parsedAttributes.replace === true;
 
       const previewId = await generatePreview(
         id,
         index,
-        codeGroup, // Use the new codeGroup variable
+        body as string,
         root,
-        template // Use the template from parsedAttrs
+        template
       );
 
       previews[id] = previews[id] || [];
       previews[id].push(previewId);
 
       const src = getSrc(previewId, options, server);
-      const type = parsedAttrs['no-code'] === true ? PreviewType.NoCode : PreviewType.Default;
 
-      let replacement = `\n<Preview src="${encodeURIComponent(src)}" type="${type}" />\n`;
-      if (type !== PreviewType.NoCode) replacement += match[0];
+      let replacement = "\n<Preview";
+      replacement += ` src="${encodeURIComponent(src)}"`;
 
-      content = content.replace(match[0], replacement);
+      // Add attributes
+      if (!replace) replacement += " replace";
+
+      replacement += " />\n";
+
+      // Include the original
+      if (!replace) replacement += root;
+
+      content = content.replace(root, replacement);
 
       index++;
     } catch {

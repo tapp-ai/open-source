@@ -1,10 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
   src: string;
-  replace?: true;
+  replace?: boolean;
 }>();
-
-const previewType = props.type || "preview";
 </script>
 
 <template>

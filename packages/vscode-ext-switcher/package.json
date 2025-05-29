@@ -1,0 +1,164 @@
+{
+  "name": "vscode-ext-switcher",
+  "displayName": "File Extension Switcher",
+  "description": "Switch between companion files in Visual Studio Code",
+  "version": "0.0.1-alpha.1",
+  "icon": "icon.png",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "package": "vsce package",
+    "build": "bun run compile && bun run package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.91.0",
+    "@vscode/vsce": "^2.31.1",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {},
+  "contributes": {
+    "commands": [
+      {
+        "command": "extensionSwitcher.switchFile",
+        "title": "Switch Between Companion Files"
+      }
+    ],
+    "configuration": {
+      "title": "File Extension Switcher",
+      "properties": {
+        "extensionSwitcher.presets": {
+          "type": "array",
+          "markdownDescription": "Presets for companion file switching. Each preset configures which file extensions are paired, fallback naming, and creation rules.",
+          "default": [
+            {
+              "sourceExtensions": [
+                ".js",
+                ".jsx",
+                ".ts",
+                ".tsx"
+              ],
+              "targetExtensions": [
+                ".module.scss",
+                ".css",
+                ".scss",
+                ".sass",
+                ".less"
+              ],
+              "createTargetExtension": ".module.scss",
+              "defaults": [
+                {
+                  "sourceName": "index",
+                  "targetName": "${dir}"
+                }
+              ],
+              "allowCreate": true
+            },
+            {
+              "sourceExtensions": [
+                ".module.scss",
+                ".css",
+                ".scss",
+                ".sass",
+                ".less"
+              ],
+              "targetExtensions": [
+                ".js",
+                ".jsx",
+                ".ts",
+                ".tsx"
+              ],
+              "createTargetExtension": ".tsx",
+              "defaults": [
+                {
+                  "sourceName": "${dir}",
+                  "targetName": "index"
+                }
+              ],
+              "allowCreate": true
+            }
+          ],
+          "items": {
+            "type": "object",
+            "required": [
+              "sourceExtensions",
+              "targetExtensions",
+              "createTargetExtension",
+              "defaults"
+            ],
+            "properties": {
+              "sourceExtensions": {
+                "type": "array",
+                "description": "Source file extensions for this preset.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "targetExtensions": {
+                "type": "array",
+                "description": "Companion file extensions for this preset.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "createTargetExtension": {
+                "type": "string",
+                "description": "Default extension to use when creating a new companion file."
+              },
+              "defaults": {
+                "type": "array",
+                "description": "Fallback matching rules for switching (e.g. from index to ${dir} and vice versa).",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sourceName": {
+                      "type": "string"
+                    },
+                    "targetName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "allowCreate": {
+                "type": "boolean",
+                "default": true,
+                "description": "Whether to allow creating a new companion file if none is found."
+              }
+            }
+          }
+        },
+        "extensionSwitcher.useOtherColumn": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, open the companion file in another editor column."
+        }
+      }
+    }
+  },
+  "keywords": [
+    "vscode",
+    "extension"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "bugs": "https://github.com/tapp-ai/open-source/issues",
+  "license": "MIT",
+  "author": "Levi Kline (https://github.com/levikline/)",
+  "publisher": "conversion",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapp-ai/open-source.git",
+    "directory": "packages/vscode-ext-switcher"
+  }
+}

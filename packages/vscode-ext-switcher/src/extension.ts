@@ -94,19 +94,30 @@ function processFileSwitch(
   useOtherColumn: boolean
 ) {
   const currentFile = path.basename(currentPath);
-  const currentExt = path.extname(currentFile);
-  const baseName = path.basename(currentFile, currentExt);
-  const parentDir = path.basename(path.dirname(currentPath));
 
   // Find matching preset
   const preset = config.presets.find((p) =>
-    p.sourceExtensions.includes(currentExt)
+    p.sourceExtensions.some((ext) => currentFile.endsWith(ext))
   );
 
   if (!preset) {
     vscode.window.showErrorMessage("extensionSwitcher: Unsupported file type.");
     return;
   }
+
+  const currentExt = preset.sourceExtensions.find((ext) =>
+    currentFile.endsWith(ext)
+  );
+  if (!currentExt) {
+    // Should not happen due to preset check above
+    vscode.window.showErrorMessage(
+      "extensionSwitcher: An unexpected error occurred."
+    );
+    return;
+  }
+
+  const baseName = path.basename(currentFile, currentExt);
+  const parentDir = path.basename(path.dirname(currentPath));
 
   // Try direct name+extension match in this folder
   let candidates = findMatchingFiles(

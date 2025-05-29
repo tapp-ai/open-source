@@ -1,0 +1,33 @@
+name: Publish VSCode Extension Switcher
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install
+
+      - run: bun run build
+        working-directory: ./packages/vscode-ext-switcher
+
+      - id: package-version
+        uses: martinbeentjes/npm-get-version-action@v1.3.1
+        with:
+          path: ./packages/vscode-ext-switcher
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          tag_name: vscode-ext-switcher-${{ steps.package-version.outputs.current-version}}
+          files: |
+            ./packages/vscode-ext-switcher/vscode-ext-switcher-*.vsix

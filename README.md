@@ -4,7 +4,7 @@ A collection of open source projects built by the team at [Conversion](https://c
 
 ## Projects
 
-### [@conversion/lexical-unicode-plugin](./packages/vitepress-plugin-previews)
+### [@conversion/lexical-unicode-plugin](./packages/lexical-unicode-plugin)
 
 A [Lexical](https://lexical.dev/) plugin that adds support for Unicode characters, including emojis, symbols, and special characters.
 

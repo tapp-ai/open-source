@@ -141,7 +141,7 @@ A default template can be specified in the VitePress configuration.
 
 ```ts [.vitepress/config.ts]
 import { defineConfig } from "vitepress";
-import { withPreviews } from "vitepress-plugin-previews";
+import { withPreviews } from "@conversion-ai/vitepress-plugin-previews";
 
 export default withPreviews(
   defineConfig({

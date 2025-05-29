@@ -4,6 +4,10 @@ A collection of open source projects built by the team at [Conversion](https://c
 
 ## Projects
 
+### [@conversion/vscode-ext-switcher](./packages/vscode-ext-switcher)
+
+A Visual Studio Code extension that allows you to switch between companion files (e.g., `.ts` and `.css`) with a simple command.
+
 ### [@conversion/lexical-unicode-plugin](./packages/lexical-unicode-plugin)
 
 A [Lexical](https://lexical.dev/) plugin that adds support for Unicode characters, including emojis, symbols, and special characters.

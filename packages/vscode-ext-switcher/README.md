@@ -2,6 +2,8 @@
 
 **File Extension Switcher** is a powerful and configurable Visual Studio Code extension that helps you seamlessly switch between companion files such as `.tsx` and `.scss`, or any other user-defined pairing. It supports customizable presets, fallback strategies, and companion file creation, making it ideal for developers working with modular, component-based project structures.
 
+[Download latest .vsix](https://github.com/tapp-ai/open-source/releases/download/vscode-ext-switcher-0.0.1-alpha.1/vscode-ext-switcher-0.0.1-alpha.1.vsix)
+
 ## Features
 
 - **Switch between companion files** (e.g., JS/TS ↔ CSS/SCSS)
@@ -142,9 +144,9 @@ Now pressing `Cmd+Shift+C` will switch between companion files.
 
 ## Installation
 
-### Pre-built Extension
+### Download the latest Release
 
-1. Download the latest `.vsix` file from the repository.
+1. Download the latest `.vsix` file from the [Latest Release](https://github.com/tapp-ai/open-source/releases/tag/vscode-ext-switcher-0.0.1-alpha.1).
 2. In VS Code, open the Extensions panel.
 3. Click the ... menu → Install from VSIX…
 4. Choose the downloaded `.vsix` file and install.

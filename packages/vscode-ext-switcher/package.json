@@ -133,7 +133,7 @@
         },
         "extensionSwitcher.useOtherColumn": {
           "type": "boolean",
-          "default": false,
+          "default": true,
           "description": "If enabled, open the companion file in another editor column."
         }
       }
@@ -149,7 +149,7 @@
   "bugs": "https://github.com/tapp-ai/open-source/issues",
   "license": "MIT",
   "author": "Levi Kline (https://github.com/levikline/)",
-  "publisher": "conversion",
+  "publisher": "Conversion",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tapp-ai/open-source.git",

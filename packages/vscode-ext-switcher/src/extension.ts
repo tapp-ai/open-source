@@ -63,7 +63,7 @@ function getExtensionConfig(): ExtensionConfig {
 /*                               File Switching                               */
 /* -------------------------------------------------------------------------- */
 
-function switchToFile(args?: any) {
+function switchToFile() {
   const currentEditor = vscode.window.activeTextEditor;
   if (!currentEditor) {
     return;
@@ -71,27 +71,20 @@ function switchToFile(args?: any) {
   const currentPath = currentEditor.document.fileName;
   const config = getExtensionConfig();
 
-  const userArgUseOtherColumn = args?.useOtherColumn;
-  const useOtherColumn =
-    userArgUseOtherColumn !== undefined
-      ? !!userArgUseOtherColumn
-      : config.useOtherColumn;
-
   const dir = path.dirname(currentPath);
   fs.readdir(dir, (err, files) => {
     if (err) {
       vscode.window.showErrorMessage("extensionSwitcher: " + err.message);
       return;
     }
-    processFileSwitch(currentPath, files, config, useOtherColumn);
+    processFileSwitch(currentPath, files, config);
   });
 }
 
 function processFileSwitch(
   currentPath: string,
   files: string[],
-  config: ExtensionConfig,
-  useOtherColumn: boolean
+  config: ExtensionConfig
 ) {
   const currentFile = path.basename(currentPath);
 
@@ -150,7 +143,12 @@ function processFileSwitch(
 
   if (candidates.length > 0) {
     // Pick "next" in list if cycling
-    openMatchingFileCycling(files, currentFile, candidates, useOtherColumn);
+    openMatchingFileCycling(
+      files,
+      currentFile,
+      candidates,
+      config.useOtherColumn
+    );
   } else if (preset.allowCreate !== false) {
     // Decide default target name for creation
     let defaultCandidateName: string | undefined;
@@ -171,7 +169,7 @@ function processFileSwitch(
     promptToCreateCompanionFile(
       path.dirname(currentPath),
       newFileName,
-      useOtherColumn
+      config.useOtherColumn
     );
   } else {
     vscode.window.showErrorMessage(
@@ -283,9 +281,8 @@ function openFile(filePath: string, column: vscode.ViewColumn) {
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "extensionSwitcher.switchFile",
-      (args?: any) => switchToFile(args)
+    vscode.commands.registerCommand("extensionSwitcher.switchFile", () =>
+      switchToFile()
     )
   );
 }

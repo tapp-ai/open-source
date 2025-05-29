@@ -19,22 +19,22 @@ Perfect for previews referencing private packages or for component libraries bui
 > Add `.vitepress/.previews/cache` to your `.gitignore` to prevent comitting and pushing previews.
 
 ```bash
-bun add vitepress-plugin-previews
+bun add @conversion-ai/vitepress-plugin-previews
 ```
 
 ```bash
-npm install vitepress-plugin-previews
+npm install @conversion-ai/vitepress-plugin-previews
 ```
 
 ```bash
-yarn add vitepress-plugin-previews
+yarn add @conversion-ai/vitepress-plugin-previews
 ```
 
 Then, wrap your VitePress configuration. Read more about the [caveats](#caveats) below.
 
 ```ts [.vitepress/config.ts]
 import { defineConfig } from "vitepress";
-import { withPreviews } from "vitepress-plugin-previews";
+import { withPreviews } from "@conversion-ai/vitepress-plugin-previews";
 import react from "@vitejs/plugin-react";
 
 export default withPreviews(

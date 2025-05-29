@@ -2,5 +2,9 @@
   "name": "open-source",
   "workspaces": [
     "packages/*"
+  ],
+  "authors": [
+    "Matthew Rowland (https://github.com/mathhulk/)",
+    "Levi Kline (https://github.com/levikline/)"
   ]
 }

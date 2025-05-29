@@ -1,5 +1,5 @@
 {
-  "name": "vitepress-plugin-previews",
+  "name": "@conversion-ai/vitepress-plugin-previews",
   "version": "0.0.1-alpha.8",
   "type": "module",
   "types": "./dist/index.d.ts",

@@ -11,14 +11,22 @@ A small, configurable plugin for the [Lexical](https://lexical.dev) editor that 
 ## Installation
 
 ```bash
-npm install lexical-unicode-plugin
+bun add @conversion-ai/lexical-unicode-plugin
+```
+
+```bash
+npm install @conversion-ai/lexical-unicode-plugin
+```
+
+```bash
+yarn add @conversion-ai/lexical-unicode-plugin
 ```
 
 ## Usage
 
 ```tsx
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { UnicodePlugin } from "lexical-unicode-plugin";
+import { UnicodePlugin } from "@conversion-ai/lexical-unicode-plugin";
 
 const editorConfig = {
   // your Lexical configuration
@@ -51,20 +59,19 @@ You can customize the replacements by passing your own list of patterns:
 
 By default, the plugin replaces the following sequences:
 
-```plaintext
-ASCII Unicode
--> →
-<- ←
-<-> ↔
-!= ≠
-== ≡
-=> ⇒
-~= ≈
-<= ≤
-= ≥
-+- ±
--- —
-```
+| ASCII | Unicode |
+| ----- | ------- |
+| `->`  | `→`     |
+| `<-`  | `←`     |
+| `<->` | `↔`     |
+| `!=`  | `≠`     |
+| `==`  | `≡`     |
+| `=>`  | `⇒`     |
+| `~=`  | `≈`     |
+| `<=`  | `≤`     |
+| `>=`  | `≥`     |
+| `+-`  | `±`     |
+| `--`  | `—`     |
 
 ## TypeScript
 

@@ -1,4 +1,4 @@
-name: Publish
+name: Publish VitePress Plugin Previews
 
 on:
   workflow_dispatch:
@@ -17,6 +17,8 @@ jobs:
       - uses: oven-sh/setup-bun@v2
 
       - run: bun install
+
+      - run: cd packages/vitepress-plugin-previews
 
       - run: bun run build
 

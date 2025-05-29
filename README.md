@@ -4,10 +4,10 @@ A collection of open source projects built by the team at [Conversion](https://c
 
 ## Projects
 
-### @conversion/lexical-unicode-plugin
+### [@conversion/lexical-unicode-plugin](./packages/vitepress-plugin-previews)
 
 A [Lexical](https://lexical.dev/) plugin that adds support for Unicode characters, including emojis, symbols, and special characters.
 
-### @conversion/vitepress-plugin-previews
+### [@conversion/vitepress-plugin-previews](./packages/vitepress-plugin-previews)
 
 No-dependencies [VitePress](https://vitepress.dev/) plugin for displaying static previews of code groups built as Vite projects.

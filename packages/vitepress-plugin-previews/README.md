@@ -151,19 +151,9 @@ export default function App() {
 :::
 ````
 
-````md
-::: code-group preview template=example-template replace
-
-```tsx [src/App.tsx]
-export default function App() {
-  return <button>Click me</button>;
-}
-```
-
-:::
-````
-
 ### React
+
+Include [@vitejs/plugin-react](https://www.npmjs.com/package/@vitejs/plugin-react) in your VitePress configuration for previews.
 
 ```ts [.vitepress/config.ts]
 import { defineConfig } from "vitepress";
@@ -180,6 +170,8 @@ export default withPreviews(
   })
 );
 ```
+
+Voila.
 
 ````md
 ::: code-group preview

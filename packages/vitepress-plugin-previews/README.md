@@ -136,12 +136,12 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 
 ### No-Code Preview
 
-Add the `no-code` flag to hide the code group below the preview. This is useful when you want to show the result without the implementation details.
+Add the `replace` flag to hide the code group below the preview. This is useful when you want to show the result without the implementation details.
 
-The `no-code` flag can be used with or without templates:
+The `replace` flag can be used with or without templates:
 
 ````md
-::: code-group preview no-code
+::: code-group preview replace
 
 ```tsx [App.tsx]
 export default function App() {
@@ -152,10 +152,10 @@ export default function App() {
 :::
 ````
 
-With a template, the `no-code` flag must come after the template name:
+With a template, the `replace` flag must come after the template name:
 
 ````md
-::: code-group preview template=my-template no-code
+::: code-group preview template=my-template replace
 
 ```tsx [src/App.tsx]
 export default function App() {
@@ -167,14 +167,14 @@ export default function App() {
 ````
 
 > [!NOTE]
-> When specifying a template (e.g., `template=my-template`) along with other flags like `no-code`, the order of attributes does not strictly matter, but the recommended syntax is `preview template=templateName no-code`.
+> When specifying a template (e.g., `template=my-template`) along with other flags like `replace`, the order of attributes does not strictly matter, but the recommended syntax is `preview template=templateName replace`.
 
 ### React Example
 
 Here's a complete React example showing how to structure your files:
 
 ````md
-::: code-group preview template=example-template no-code
+::: code-group preview template=example-template replace
 
 ```tsx [src/App.tsx]
 import { useState } from "react";
@@ -236,7 +236,7 @@ export default withPreviews(
 Templates can be specified per code group and will overwrite the default template.
 
 ````md
-::: code-group preview template=example-template no-code
+::: code-group preview template=example-template replace
 
 ```tsx [src/App.tsx]
 export default function App() {

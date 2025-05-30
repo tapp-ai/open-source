@@ -8,9 +8,9 @@ Perfect for previews referencing private packages or for component libraries bui
 
 - [Installation](#installation)
 - [Usage](#usage)
-  - [Basic Usage](#basic-usage)
-  - [No-Code Preview](#no-code-preview)
-  - [React Example](#react-example)
+  - [Basic](#basic)
+  - [Replace](#replace)
+  - [React](#react)
 - [Templates](#templates)
 - [Caveats](#caveats)
 
@@ -100,7 +100,7 @@ interface PreviewsPluginOptions {
 
 ## Usage
 
-### Basic Usage
+### Basic
 
 Add the `preview` flag to any code group.
 
@@ -109,8 +109,6 @@ Add the `preview` flag to any code group.
 
 ```tsx [main.tsx]
 import { createRoot } from "react-dom/client";
-
-import App from "./App";
 
 createRoot(document.getElementById("root") as HTMLElement).render(
   <button>Click me</button>
@@ -134,28 +132,15 @@ createRoot(document.getElementById("root") as HTMLElement).render(
 :::
 ````
 
-### No-Code Preview
+### Replace
 
-Add the `replace` flag to hide the code group below the preview. This is useful when you want to show the result without the implementation details.
+Add the `replace` flag to a code group preview to replace the code group with the preview instead of displaying both.
 
-The `replace` flag can be used with or without templates:
-
-````md
-::: code-group preview replace
-
-```tsx [App.tsx]
-export default function App() {
-  return <button>Click me</button>;
-}
-```
-
-:::
-````
-
-With a template, the `replace` flag must come after the template name:
+> [!NOTE]
+> The order of attributes, such as `template=react` and `replace`, does not matter. However, `preview` must always come first. The `example-template` template is not included, but templates can be [added easily](#templates).
 
 ````md
-::: code-group preview template=my-template replace
+::: code-group preview template=example-template replace
 
 ```tsx [src/App.tsx]
 export default function App() {
@@ -166,15 +151,38 @@ export default function App() {
 :::
 ````
 
-> [!NOTE]
-> When specifying a template (e.g., `template=my-template`) along with other flags like `replace`, the order of attributes does not strictly matter, but the recommended syntax is `preview template=templateName replace`.
-
-### React Example
-
-Here's a complete React example showing how to structure your files:
-
 ````md
 ::: code-group preview template=example-template replace
+
+```tsx [src/App.tsx]
+export default function App() {
+  return <button>Click me</button>;
+}
+```
+
+:::
+````
+
+### React
+
+```ts [.vitepress/config.ts]
+import { defineConfig } from "vitepress";
+import { withPreviews } from "@conversion-ai/vitepress-plugin-previews";
+import react from "@vitejs/plugin-react";
+
+export default withPreviews(
+  defineConfig({
+    previews: {
+      vite: {
+        plugins: [react()],
+      },
+    },
+  })
+);
+```
+
+````md
+::: code-group preview
 
 ```tsx [src/App.tsx]
 import { useState } from "react";
@@ -205,6 +213,28 @@ button {
 }
 ```
 
+```tsx [src/main.tsx]
+import { createRoot } from "react-dom/client";
+
+import App from "./App";
+
+createRoot(document.getElementById("root") as HTMLElement).render(<App />);
+```
+
+```html [index.html]
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>
+```
+
 :::
 ````
 
@@ -212,7 +242,7 @@ button {
 
 By default, previews only consist of files defined within code groups. However, you may want to base previews off of a template and only overwrite relevant files.
 
-Templates are directories within `.vitepress/.previews/templates`, and they can be referenced in two places.
+Templates are stored as directories within `.vitepress/.previews/templates`, and they can be referenced in two places.
 
 ### Default template
 

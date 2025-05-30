@@ -105,7 +105,7 @@ interface PreviewsPluginOptions {
 Add the `preview` flag to any code group.
 
 ````md
-+ ::: code-group preview
+::: code-group preview
 
 ```tsx [main.tsx]
 import { createRoot } from "react-dom/client";

@@ -137,7 +137,7 @@ const transform = async (
 
   for (const match of matches) {
     try {
-      const [root, attributes, body] = match;
+      const [original, attributes, body] = match;
 
       // Code groups must have a body
       if (!body) continue;
@@ -171,14 +171,14 @@ const transform = async (
       replacement += ` src="${encodeURIComponent(src)}"`;
 
       // Add attributes
-      if (!replace) replacement += " replace";
+      if (replace) replacement += " replace";
 
       replacement += " />\n";
 
       // Include the original
-      if (!replace) replacement += root;
+      if (!replace) replacement += original;
 
-      content = content.replace(root, replacement);
+      content = content.replace(original, replacement);
 
       index++;
     } catch {
@@ -369,7 +369,7 @@ export function PreviewsPlugin(
       // https://github.com/emersonbottero/vitepress-plugin-mermaid/blob/main/src/mermaid-plugin.ts#L39
       if (id.includes("vitepress/dist/client/app/index.js")) {
         src =
-          "\nimport Preview from 'vitepress-plugin-previews/Preview.vue';\n" +
+          "\nimport Preview from '@conversion-ai/vitepress-plugin-previews/Preview.vue';\n" +
           src;
 
         const lines = src.split("\n");

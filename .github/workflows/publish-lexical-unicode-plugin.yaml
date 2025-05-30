@@ -1,0 +1,27 @@
+name: Publish Lexical Unicode Plugin
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install
+
+      - run: bun run build
+        working-directory: ./packages/lexical-unicode-plugin
+
+      - run: bun publish --access public
+        working-directory: ./packages/lexical-unicode-plugin
+        env:
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

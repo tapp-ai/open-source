@@ -1,0 +1,42 @@
+{
+  "name": "@conversion-ai/vitepress-plugin-previews",
+  "version": "0.0.1-alpha.8",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    },
+    "./Preview.vue": "./dist/Preview.vue"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "bun scripts/build.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "esbuild": "^0.25.4",
+    "tsup": "^8.4.0",
+    "typescript": "^5.8.3",
+    "vitepress": "^1.0.0",
+    "vite": "^5.0.0"
+  },
+  "peerDependencies": {
+    "vitepress": "^1.0.0 || ^1.0.0-alpha",
+    "vite": "^5.0.0"
+  },
+  "description": "Code group previews for VitePress using Vite",
+  "keywords": [
+    "vitepress"
+  ],
+  "bugs": "https://github.com/tapp-ai/open-source/issues",
+  "license": "MIT",
+  "author": "Matthew Rowland (https://github.com/mathhulk/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapp-ai/open-source.git",
+    "directory": "packages/vitepress-plugin-previews"
+  }
+}

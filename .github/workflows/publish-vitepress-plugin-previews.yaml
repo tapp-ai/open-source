@@ -1,4 +1,4 @@
-name: Publish
+name: Publish VitePress Plugin Previews
 
 on:
   workflow_dispatch:
@@ -19,7 +19,9 @@ jobs:
       - run: bun install
 
       - run: bun run build
+        working-directory: ./packages/vitepress-plugin-previews
 
       - run: bun publish --access public
+        working-directory: ./packages/vitepress-plugin-previews
         env:
           NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}

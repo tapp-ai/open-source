@@ -1,0 +1,41 @@
+{
+  "name": "@conversion-ai/lexical-unicode-plugin",
+  "version": "0.0.1-alpha.2",
+  "source": "./src/index.tsx",
+  "types": "./dist/types.d.ts",
+  "main": "./dist/main.js",
+  "module": "./dist/module.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "devDependencies": {
+    "@parcel/packager-ts": "^2.15.2",
+    "@parcel/transformer-typescript-types": "^2.15.2",
+    "@types/bun": "latest",
+    "parcel": "latest",
+    "typescript": "^5.8.3",
+    "@types/react": "^19.1.6"
+  },
+  "peerDependencies": {
+    "@lexical/react": "^0.31.1",
+    "lexical": "^0.31.1",
+    "react": "^18.0.0"
+  },
+  "description": "A plugin for Lexical that adds support for Unicode characters",
+  "keywords": [
+    "lexical",
+    "react"
+  ],
+  "bugs": "https://github.com/tapp-ai/open-source/issues",
+  "license": "MIT",
+  "author": "Levi Kline (https://github.com/levikline/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapp-ai/open-source.git",
+    "directory": "packages/lexical-unicode-plugin"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@conversion-ai/vitepress-plugin-previews",
-  "version": "0.0.1-alpha.10",
+  "version": "0.0.1-alpha.11",
   "type": "module",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -17,11 +17,11 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "esbuild": "^0.25.6",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "vitepress": "^1.6.3",
-    "vite": "^7.0.3"
+    "esbuild": "^0.25.10",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.9.2",
+    "vitepress": "^1.6.4",
+    "vite": "npm:rolldown-vite@latest"
   },
   "peerDependencies": {
     "vitepress": "^1.0.0 || ^1.0.0-alpha",

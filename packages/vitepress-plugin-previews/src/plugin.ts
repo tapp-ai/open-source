@@ -234,8 +234,8 @@ const closeBundle = async (
         outDir: path.isAbsolute(options.build.outDir)
           ? options.build.outDir
           : path.join(outDir, options.build.outDir),
-        rollupOptions: {
-          ...options?.vite?.build?.rollupOptions,
+        rolldownOptions: {
+          ...options?.vite?.build?.rolldownOptions,
           input: entries.reduce((acc, id) => {
             acc[id] = path.join(tmpdir, id, "index.html");
             return acc;

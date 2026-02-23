@@ -2,7 +2,7 @@
   "name": "vscode-ext-switcher",
   "displayName": "File Extension Switcher",
   "description": "Switch between companion files in Visual Studio Code",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.100.0"
@@ -11,11 +11,15 @@
   "scripts": {
     "compile": "tsc -p ./",
     "package": "vsce package --no-dependencies",
-    "build": "bun run compile && bun run package"
+    "build": "bun run compile && bun run package",
+    "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
     "@types/vscode": "^1.100.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.4.2",
     "typescript": "^5.8.3"
   },
@@ -35,50 +39,13 @@
           "markdownDescription": "Presets for companion file switching. Each preset configures which file extensions are paired, fallback naming, and creation rules.",
           "default": [
             {
-              "sourceExtensions": [
-                ".js",
-                ".jsx",
-                ".ts",
-                ".tsx"
-              ],
-              "targetExtensions": [
-                ".module.scss",
-                ".css",
-                ".scss",
-                ".sass",
-                ".less"
-              ],
+              "sourceExtensions": [".tsx", ".jsx", ".ts", ".js"],
+              "targetExtensions": [".module.scss", ".css", ".scss", ".sass", ".less"],
+              "sourceDefaultName": "index",
+              "targetDefaultName": "${dir}",
+              "createSourceExtension": ".tsx",
               "createTargetExtension": ".module.scss",
-              "defaults": [
-                {
-                  "sourceName": "index",
-                  "targetName": "${dir}"
-                }
-              ],
-              "allowCreate": true
-            },
-            {
-              "sourceExtensions": [
-                ".module.scss",
-                ".css",
-                ".scss",
-                ".sass",
-                ".less"
-              ],
-              "targetExtensions": [
-                ".js",
-                ".jsx",
-                ".ts",
-                ".tsx"
-              ],
-              "createTargetExtension": ".tsx",
-              "defaults": [
-                {
-                  "sourceName": "${dir}",
-                  "targetName": "index"
-                }
-              ],
-              "allowCreate": true
+              "enableBidirectionalSwitch": true
             }
           ],
           "items": {
@@ -86,47 +53,46 @@
             "required": [
               "sourceExtensions",
               "targetExtensions",
-              "createTargetExtension",
-              "defaults"
+              "sourceDefaultName",
+              "targetDefaultName",
+              "createSourceExtension",
+              "createTargetExtension"
             ],
             "properties": {
               "sourceExtensions": {
                 "type": "array",
-                "description": "Source file extensions for this preset.",
+                "description": "Source file extensions (e.g. [\".tsx\", \".jsx\", \".ts\", \".js\"]).",
                 "items": {
                   "type": "string"
                 }
               },
               "targetExtensions": {
                 "type": "array",
-                "description": "Companion file extensions for this preset.",
+                "description": "Companion file extensions (e.g. [\".module.scss\", \".css\", \".scss\"]).",
                 "items": {
                   "type": "string"
                 }
               },
+              "sourceDefaultName": {
+                "type": "string",
+                "description": "Default source file name for fallback matching (e.g. \"index\"). Use \"${dir}\" for directory name."
+              },
+              "targetDefaultName": {
+                "type": "string",
+                "description": "Default target file name for fallback matching (e.g. \"${dir}\"). Use \"${dir}\" for directory name."
+              },
+              "createSourceExtension": {
+                "type": "string",
+                "description": "Extension to use when creating a new source file (e.g. \".tsx\")."
+              },
               "createTargetExtension": {
                 "type": "string",
-                "description": "Default extension to use when creating a new companion file."
+                "description": "Extension to use when creating a new companion file (e.g. \".module.scss\")."
               },
-              "defaults": {
-                "type": "array",
-                "description": "Fallback matching rules for switching (e.g. from index to ${dir} and vice versa).",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "sourceName": {
-                      "type": "string"
-                    },
-                    "targetName": {
-                      "type": "string"
-                    }
-                  }
-                }
-              },
-              "allowCreate": {
+              "enableBidirectionalSwitch": {
                 "type": "boolean",
                 "default": true,
-                "description": "Whether to allow creating a new companion file if none is found."
+                "description": "Allow switching from target back to source files."
               }
             }
           }
@@ -135,6 +101,11 @@
           "type": "boolean",
           "default": true,
           "description": "If enabled, open the companion file in another editor column."
+        },
+        "extensionSwitcher.allowFileCreation": {
+          "type": "boolean",
+          "default": true,
+          "description": "If enabled, prompt to create a new companion file when none is found."
         }
       }
     }

@@ -10,19 +10,19 @@ const DirectoryNamePlaceholder = "${dir}";
 /* -------------------------------------------------------------------------- */
 
 interface FileSwitchPreset {
-  sourceExtensions: string[];
-  targetExtensions: string[];
-  createTargetExtension: string; // for new file creation
-  defaults: {
-    sourceName: string | "${dir}";
-    targetName: string | "${dir}";
-  }[];
-  allowCreate?: boolean; // whether to prompt creation when no match found, default true
+  sourceExtensions: string[]; // E.g. [".tsx", ".jsx", ".ts", ".js"]
+  targetExtensions: string[]; // E.g. [".module.scss", ".css", ".scss", ".sass", ".less"]
+  sourceDefaultName: string; // E.g. "index" for index.tsx
+  targetDefaultName: string; // E.g. "${dir}" for directory name
+  createSourceExtension: string; // E.g. ".tsx"
+  createTargetExtension: string; // E.g. ".module.scss"
+  enableBidirectionalSwitch?: boolean; // Default: true
 }
 
 interface ExtensionConfig {
   presets: FileSwitchPreset[];
-  useOtherColumn: boolean;
+  useOtherColumn: boolean; // Default: true
+  allowFileCreation: boolean; // Default: true
 }
 
 /* -------------------------------------------------------------------------- */
@@ -32,22 +32,18 @@ interface ExtensionConfig {
 function getExtensionConfig(): ExtensionConfig {
   const config = vscode.workspace.getConfiguration("extensionSwitcher");
   const useOtherColumn: boolean = config.get("useOtherColumn", true);
+  const allowFileCreation: boolean = config.get("allowFileCreation", true);
   const userPresets = config.get<FileSwitchPreset[]>("presets");
 
   const defaultPresets: FileSwitchPreset[] = [
     {
-      sourceExtensions: [".js", ".jsx", ".ts", ".tsx"],
+      sourceExtensions: [".tsx", ".jsx", ".ts", ".js"],
       targetExtensions: [".module.scss", ".css", ".scss", ".sass", ".less"],
+      createSourceExtension: ".tsx",
       createTargetExtension: ".module.scss",
-      defaults: [{ sourceName: "index", targetName: DirectoryNamePlaceholder }],
-      allowCreate: true,
-    },
-    {
-      sourceExtensions: [".module.scss", ".css", ".scss", ".sass", ".less"],
-      targetExtensions: [".js", ".jsx", ".ts", ".tsx"],
-      createTargetExtension: ".tsx",
-      defaults: [{ sourceName: DirectoryNamePlaceholder, targetName: "index" }],
-      allowCreate: true,
+      sourceDefaultName: "index",
+      targetDefaultName: DirectoryNamePlaceholder,
+      enableBidirectionalSwitch: true,
     },
   ];
 
@@ -56,7 +52,7 @@ function getExtensionConfig(): ExtensionConfig {
       ? userPresets
       : defaultPresets;
 
-  return { presets, useOtherColumn };
+  return { presets, useOtherColumn, allowFileCreation };
 }
 
 /* -------------------------------------------------------------------------- */
@@ -88,56 +84,71 @@ function processFileSwitch(
 ) {
   const currentFile = path.basename(currentPath);
 
-  // Find matching preset
-  const preset = config.presets.find((p) =>
+  // Find matching preset and determine direction
+  let preset: FileSwitchPreset | undefined = undefined;
+  let isReverse = false;
+
+  // Prefer sourceExtensions that match current file extension
+  preset = config.presets.find((p) =>
     p.sourceExtensions.some((ext) => currentFile.endsWith(ext))
   );
+
+  // If not found, try bidirectional targetExtensions that match current file extension
+  if (!preset) {
+    preset = config.presets.find(
+      (p) =>
+        p.enableBidirectionalSwitch !== false &&
+        p.targetExtensions.some((ext) => currentFile.endsWith(ext))
+    );
+    if (preset) {
+      isReverse = true;
+    }
+  }
 
   if (!preset) {
     vscode.window.showErrorMessage("extensionSwitcher: Unsupported file type.");
     return;
   }
 
-  const currentExt = preset.sourceExtensions.find((ext) =>
-    currentFile.endsWith(ext)
-  );
+  // In reverse mode, swap source/target roles
+  const fromExtensions = isReverse
+    ? preset.targetExtensions
+    : preset.sourceExtensions;
+  const toExtensions = isReverse
+    ? preset.sourceExtensions
+    : preset.targetExtensions;
+  const fromDefaultName = isReverse
+    ? preset.targetDefaultName
+    : preset.sourceDefaultName;
+  const toDefaultName = isReverse
+    ? preset.sourceDefaultName
+    : preset.targetDefaultName;
+  const createExtension = isReverse
+    ? preset.createSourceExtension
+    : preset.createTargetExtension;
+
+  const currentExt = fromExtensions.find((ext) => currentFile.endsWith(ext));
   if (!currentExt) {
-    // Should not happen due to preset check above
     vscode.window.showErrorMessage(
       "extensionSwitcher: An unexpected error occurred."
     );
     return;
   }
 
-  const baseName = path.basename(currentFile, currentExt);
+  const baseName = currentFile.slice(0, -currentExt.length);
   const parentDir = path.basename(path.dirname(currentPath));
 
   // Try direct name+extension match in this folder
-  let candidates = findMatchingFiles(
-    files,
-    baseName,
-    preset.targetExtensions,
-    currentFile
-  );
+  let candidates = findMatchingFiles(files, baseName, toExtensions, currentFile);
 
-  // Try "defaults" fallback if configured
+  // Try default name fallback
   if (candidates.length === 0) {
-    for (const { sourceName, targetName } of preset.defaults || []) {
-      if (sourceNameMatch(sourceName, baseName, parentDir)) {
-        // Replace placeholder
-        const resolvedTargetName = targetName.replace(
-          DirectoryNamePlaceholder,
-          parentDir
-        );
-        for (const ext of preset.targetExtensions) {
-          const candidateFile = resolvedTargetName + ext;
-          if (files.includes(candidateFile)) {
-            candidates.push(
-              path.join(path.dirname(currentPath), candidateFile)
-            );
-          }
-        }
-      }
+    if (sourceNameMatch(fromDefaultName, baseName, parentDir)) {
+      const resolvedName = toDefaultName.replace(
+        DirectoryNamePlaceholder,
+        parentDir
+      );
+      candidates = findMatchingFiles(files, resolvedName, toExtensions, currentFile);
     }
   }
 
@@ -149,23 +160,19 @@ function processFileSwitch(
       candidates,
       config.useOtherColumn
     );
-  } else if (preset.allowCreate !== false) {
+  } else if (config.allowFileCreation) {
     // Decide default target name for creation
-    let defaultCandidateName: string | undefined;
-    for (const { sourceName, targetName } of preset.defaults) {
-      if (sourceNameMatch(sourceName, baseName, parentDir)) {
-        defaultCandidateName = targetName.replace(
-          DirectoryNamePlaceholder,
-          parentDir
-        );
-        break;
-      }
-    }
-    if (!defaultCandidateName) {
+    let defaultCandidateName: string;
+    if (sourceNameMatch(fromDefaultName, baseName, parentDir)) {
+      defaultCandidateName = toDefaultName.replace(
+        DirectoryNamePlaceholder,
+        parentDir
+      );
+    } else {
       defaultCandidateName = baseName;
     }
 
-    const newFileName = defaultCandidateName + preset.createTargetExtension;
+    const newFileName = defaultCandidateName + createExtension;
     promptToCreateCompanionFile(
       path.dirname(currentPath),
       newFileName,
@@ -188,13 +195,9 @@ function findMatchingFiles(
   exts: string[],
   excludeFile: string
 ): string[] {
-  return files
-    .filter((f) => {
-      const fExt = path.extname(f);
-      const fBase = path.basename(f, fExt);
-      return fBase === baseName && exts.includes(fExt) && f !== excludeFile;
-    })
-    .map((f) => f);
+  return files.filter(
+    (f) => f !== excludeFile && exts.some((ext) => f === baseName + ext)
+  );
 }
 
 function sourceNameMatch(

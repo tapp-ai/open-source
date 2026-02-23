@@ -2,7 +2,7 @@
 
 **File Extension Switcher** is a powerful and configurable Visual Studio Code extension that helps you seamlessly switch between companion files such as `.tsx` and `.scss`, or any other user-defined pairing. It supports customizable presets, fallback strategies, and companion file creation, making it ideal for developers working with modular, component-based project structures.
 
-[Download latest .vsix](https://github.com/tapp-ai/open-source/releases/download/vscode-ext-switcher-0.0.1-alpha.1/vscode-ext-switcher-0.0.1-alpha.1.vsix)
+[Download latest .vsix](https://github.com/tapp-ai/open-source/releases/download/vscode-ext-switcher-0.0.1-alpha.2/vscode-ext-switcher-0.0.1-alpha.2.vsix)
 
 ## Features
 
@@ -45,7 +45,7 @@ With the default presets, the extension will switch:
 - From `Button.jsx` → `Button.css`
 - From `Button.css` → `Button.jsx`
 
-If any of those companion files don't exist, you’ll be prompted to create them according to the `defaults` setting within each preset.
+If any of those companion files don’t exist, you’ll be prompted to create one.
 
 ## Configuration
 
@@ -55,74 +55,49 @@ All configuration is done via your VS Code `settings.json` under the `extensionS
 
 Defines how file types relate. Each preset includes:
 
-- `sourceExtensions`: Extensions to switch from
-- `targetExtensions`: Extensions to switch to
-- `createTargetExtension`: Used when creating a missing companion
-- `defaults`: Fallback mapping rules (e.g., "index" ↔ "${dir}")
-- `allowCreate`: Whether to allow file creation (default true)
+- `sourceExtensions`: Extensions to switch from (e.g. `[".tsx", ".jsx", ".ts", ".js"]`)
+- `targetExtensions`: Extensions to switch to (e.g. `[".module.scss", ".css", ".scss"]`)
+- `sourceDefaultName`: Fallback source file name (e.g. `"index"`)
+- `targetDefaultName`: Fallback target file name (e.g. `"${dir}"`)
+- `createSourceExtension`: Extension used when creating a missing source file (e.g. `".tsx"`)
+- `createTargetExtension`: Extension used when creating a missing companion file (e.g. `".module.scss"`)
+- `enableBidirectionalSwitch`: Allow switching from target back to source (default `true`)
 
-When referencing the current directory, you can use `${dir}` to dynamically use the folder name.
+Use `${dir}` in `sourceDefaultName` or `targetDefaultName` to dynamically reference the parent directory name.
 
-By default, the extension includes two presets for common JS/TS and CSS/SCSS patterns. The default presets assume a common pattern where the JavaScript file is named `index` and the companion stylesheet file uses the directory name. You can customize or add more as needed.
+By default, the extension includes a single bidirectional preset for common JS/TS and CSS/SCSS patterns. It assumes the JavaScript file is named `index` and the companion stylesheet uses the directory name. You can customize or add more presets as needed.
 
-Default presets:
+Default preset:
 
 ```json
 "extensionSwitcher.presets": [
   {
-    "sourceExtensions": [
-      ".js",
-      ".jsx",
-      ".ts",
-      ".tsx"
-    ],
-    "targetExtensions": [
-      ".module.scss",
-      ".css",
-      ".scss",
-      ".sass",
-      ".less"
-    ],
+    "sourceExtensions": [".tsx", ".jsx", ".ts", ".js"],
+    "targetExtensions": [".module.scss", ".css", ".scss", ".sass", ".less"],
+    "sourceDefaultName": "index",
+    "targetDefaultName": "${dir}",
+    "createSourceExtension": ".tsx",
     "createTargetExtension": ".module.scss",
-    "defaults": [
-      {
-        "sourceName": "index",
-        "targetName": "${dir}"
-      }
-    ],
-    "allowCreate": true
-  },
-  {
-    "sourceExtensions": [
-      ".module.scss",
-      ".css",
-      ".scss",
-      ".sass",
-      ".less"
-    ],
-    "targetExtensions": [
-      ".js",
-      ".jsx",
-      ".ts",
-      ".tsx"
-    ],
-    "createTargetExtension": ".tsx",
-    "defaults": [
-      {
-        "sourceName": "${dir}",
-        "targetName": "index"
-      }
-    ],
-    "allowCreate": true
+    "enableBidirectionalSwitch": true
   }
 ]
 ```
 
 ### `useOtherColumn` (Boolean)
 
-If enabled (`true`), the companion file opens in another editor column.
+If enabled (`true`), the companion file opens in another editor column. Default: `true`.
 
-`"extensionSwitcher.useOtherColumn": true`
+```json
+"extensionSwitcher.useOtherColumn": true
+```
+
+### `allowFileCreation` (Boolean)
+
+If enabled (`true`), prompts to create a new companion file when none is found. Default: `true`.
+
+```json
+"extensionSwitcher.allowFileCreation": true
+```
 
 ## Keybinding Setup
 
@@ -146,7 +121,7 @@ Now pressing `Cmd+Shift+C` will switch between companion files.
 
 ### Download the latest Release
 
-1. Download the latest `.vsix` file from the [Latest Release](https://github.com/tapp-ai/open-source/releases/tag/vscode-ext-switcher-0.0.1-alpha.1).
+1. Download the latest `.vsix` file from the [Latest Release](https://github.com/tapp-ai/open-source/releases/tag/vscode-ext-switcher-0.0.1-alpha.2).
 2. In VS Code, open the Extensions panel.
 3. Click the ... menu → Install from VSIX…
 4. Choose the downloaded `.vsix` file and install.

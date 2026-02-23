@@ -15,3 +15,7 @@ A [Lexical](https://lexical.dev/) plugin that adds support for Unicode character
 ### [@conversion/vitepress-plugin-previews](./packages/vitepress-plugin-previews)
 
 No-dependencies [VitePress](https://vitepress.dev/) plugin for displaying static previews of code groups built as Vite projects.
+
+### [@conversion/eslint-plugin-css-modules](./packages/eslint-plugin-css-modules)
+
+An ESLint plugin for CSS Modules that detects unused and undefined CSS classes.

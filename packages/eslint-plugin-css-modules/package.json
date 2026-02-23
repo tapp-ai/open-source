@@ -1,0 +1,45 @@
+{
+  "name": "@conversion-ai/eslint-plugin-css-modules",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "gonzales-pe": "^4.3.0"
+  },
+  "peerDependencies": {
+    "eslint": ">=9.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "eslint": "^9.22.0",
+    "tsdown": "^0.15.6",
+    "typescript": "^5.9.2"
+  },
+  "description": "ESLint plugin for CSS Modules that detects unused and undefined CSS classes",
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "css-modules"
+  ],
+  "bugs": "https://github.com/tapp-ai/open-source/issues",
+  "license": "MIT",
+  "author": "Levi Kline (https://github.com/levikline/)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapp-ai/open-source.git",
+    "directory": "packages/eslint-plugin-css-modules"
+  }
+}

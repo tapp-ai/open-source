@@ -1,0 +1,25 @@
+.local1 {}
+
+.local2 {
+  :global(.global1) {}
+}
+
+:global .global1 {}
+
+:global(.global2) {}
+
+:global {
+  .global1 {
+
+  }
+}
+
+.local3 {
+  :global {
+    .global2 {}
+  }
+}
+
+.local4 :global .global1 .global2 {}
+
+.local5 :global(.global1, .global2) .local6 {}

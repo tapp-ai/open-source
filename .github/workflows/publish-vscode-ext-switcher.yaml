@@ -18,6 +18,9 @@ jobs:
 
       - run: bun install
 
+      - run: bun run compile
+        working-directory: ./packages/vscode-ext-switcher
+
       - run: xvfb-run -a bun run test
         working-directory: ./packages/vscode-ext-switcher
 

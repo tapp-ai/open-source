@@ -6,5 +6,13 @@
   "authors": [
     "Matthew Rowland (https://github.com/mathhulk/)",
     "Levi Kline (https://github.com/levikline/)"
-  ]
+  ],
+  "homepage": "https://github.com/tapp-ai/open-source",
+  "bugs": {
+    "url": "https://github.com/tapp-ai/open-source/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tapp-ai/open-source.git"
+  }
 }

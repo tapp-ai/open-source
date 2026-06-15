@@ -37,5 +37,6 @@
     "type": "git",
     "url": "git+https://github.com/tapp-ai/open-source.git",
     "directory": "packages/lexical-unicode-plugin"
-  }
+  },
+  "homepage": "https://github.com/tapp-ai/open-source"
 }

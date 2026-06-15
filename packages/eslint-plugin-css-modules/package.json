@@ -41,5 +41,6 @@
     "type": "git",
     "url": "git+https://github.com/tapp-ai/open-source.git",
     "directory": "packages/eslint-plugin-css-modules"
-  }
+  },
+  "homepage": "https://github.com/tapp-ai/open-source"
 }

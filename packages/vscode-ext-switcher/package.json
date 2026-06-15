@@ -39,8 +39,19 @@
           "markdownDescription": "Presets for companion file switching. Each preset configures which file extensions are paired, fallback naming, and creation rules.",
           "default": [
             {
-              "sourceExtensions": [".tsx", ".jsx", ".ts", ".js"],
-              "targetExtensions": [".module.scss", ".css", ".scss", ".sass", ".less"],
+              "sourceExtensions": [
+                ".tsx",
+                ".jsx",
+                ".ts",
+                ".js"
+              ],
+              "targetExtensions": [
+                ".module.scss",
+                ".css",
+                ".scss",
+                ".sass",
+                ".less"
+              ],
               "sourceDefaultName": "index",
               "targetDefaultName": "${dir}",
               "createSourceExtension": ".tsx",
@@ -125,5 +136,6 @@
     "type": "git",
     "url": "git+https://github.com/tapp-ai/open-source.git",
     "directory": "packages/vscode-ext-switcher"
-  }
+  },
+  "homepage": "https://github.com/tapp-ai/open-source"
 }

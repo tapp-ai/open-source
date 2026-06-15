@@ -38,5 +38,6 @@
     "type": "git",
     "url": "git+https://github.com/tapp-ai/open-source.git",
     "directory": "packages/vitepress-plugin-previews"
-  }
+  },
+  "homepage": "https://github.com/tapp-ai/open-source"
 }

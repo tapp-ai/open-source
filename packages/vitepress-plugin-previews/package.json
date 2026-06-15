@@ -31,7 +31,10 @@
   "keywords": [
     "vitepress"
   ],
-  "bugs": "https://github.com/tapp-ai/open-source/issues",
+  "bugs": {
+    "url": "https://github.com/tapp-ai/open-source/issues"
+  },
+  "homepage": "https://github.com/tapp-ai/open-source/tree/main/packages/vitepress-plugin-previews#readme",
   "license": "MIT",
   "author": "Matthew Rowland (https://github.com/mathhulk/)",
   "repository": {
